@@ -6,7 +6,7 @@
 - User -> Devise
 - AdminUser -> STI
 
-##Features:
+## Features
 - Approval Workflow
 - SMS Sending -> link to approval or overtime input
 - Administrate admin dashboard
