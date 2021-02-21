@@ -1,2 +1,66 @@
 rails new overtime --database=postgresql
 
+/Gemfile
+group :development, :test do
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'rspec-rails'
+  gem 'capybara'
+  gem 'database_cleaner'
+end
+
+bundle
+
+rails generate rspec:install
+
+delete test folder
+
+/spec/rails_helper.rb :
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../../config/environment', __FILE__)
+
+abort("The Rails environment is running in production mode!") if Rails.env.production?
+require 'spec_helper'
+require 'rspec/rails'
+require 'capybara/rails'
+
+ActiveRecord::Migration.maintain_test_schema!
+
+RSpec.configure do |config|
+  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  config.use_transactional_fixtures = false
+  config.before(:suite) { DatabaseCleaner.clean_with(:truncation) }
+  config.before(:each) { DatabaseCleaner.strategy = :transaction }
+  config.before(:each, :js => true) { DatabaseCleaner.strategy = :truncation }
+  config.before(:each) { DatabaseCleaner.start }
+  config.after(:each) { DatabaseCleaner.clean }
+  config.infer_spec_type_from_file_location!
+  config.filter_rails_from_backtrace!
+end
+
+mkdir spec/features
+touch spec/features/static_spec.rb
+require 'rails_helper'
+describe 'navigate' do
+  describe 'homepage' do
+    it 'can be reached successfully' do
+      visit root_path
+      expect(page.status_code).to eq(200)
+    end
+  end
+end
+
+Now lets test:
+rsepc (Note: it might fail bcz db is not created ye)
+
+bundle exec rake db:create
+bundle exec rake db:migrate
+
+To Pass a test:
+rails g controller static homepage
+touch static/homepage.html.erb
+/routes.rb : root 'static#homepage'
+
+rsepc
+
+rails s -> firefox -> localhost:3000
+
