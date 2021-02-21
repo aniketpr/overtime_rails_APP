@@ -80,3 +80,15 @@ rails g devise User first_name:string last_name:string type:string
 optional for now: avatar:text username:string
 
 rails db:migrate
+
+Now Time to add Single Table Inheritance (STI):
+/models -> admin_user.rb
+class AdminUser < User
+end
+
+rails c --sandbox
+User.create!(email:"test@test.com", password: "123456", password_confirmation: "123456")
+AdminUser.create!(email:"admintest@test.com", password: "123456", password_confirmation: "123456")
+u = AdminUser.last
+u.type
+Note: We need to have type attribute in our table which we want to use as a STI
