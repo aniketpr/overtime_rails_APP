@@ -64,3 +64,19 @@ rsepc
 
 rails s -> firefox -> localhost:3000
 
+gem 'devise', '~> 4.7', '>= 4.7.3'
+
+bundle
+
+rails g devise:install
+Now follow the first instruction from output of above command
+rails g devise:views
+
+devise.rb :
+config.mailer_sender = 'no-reply@example.com'
+Note: update it with mail service you own
+
+rails g devise User first_name:string last_name:string type:string
+optional for now: avatar:text username:string
+
+rails db:migrate
