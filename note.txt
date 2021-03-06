@@ -92,3 +92,169 @@ AdminUser.create!(email:"admintest@test.com", password: "123456", password_confi
 u = AdminUser.last
 u.type
 Note: We need to have type attribute in our table which we want to use as a STI
+
+/spec/models/user_spec.rb
+  describe "creation" do 
+    before do
+      @user = User.create(email: "test@test.com", password: "123456", password_confirmation: "123456", first_name: "aniket", last_name: "Prasad")
+    end
+
+    it "can be created" do
+      expect(@user).to be_valid 
+    end
+
+    it "Cannot be created without first_name, last_name" do 
+      @user.first_name = nil
+      @user.last_name = nil 
+      expect(@user).to_not be be_valid
+    end
+  end
+
+Now run specific test:
+rspec /spec/models/user_spec.rb
+rspec ./spec/models/user_spec.rb:13
+
+/models/user.rb :
+validates_presence_of :first_name, :last_name
+
+rails g resource Post date:date rationale:text
+rails db:migrate
+
+post_spec.rb :
+  describe "Creation" do
+    before do 
+      @post = Post.create(date: Date.today, rationale: "anything")
+    end
+    it 'can be created' do 
+      expect(@post).to be_valid
+    end
+    it 'cannot be created without a date and rationale' do
+      @post.date = nil
+      @post.rationale = nil
+      expect(@post).to_not be_valid
+    end
+
+rspec
+
+/model/post.rb
+validates_presence_of :date, :rationale
+
+rspec
+
+touch /spec/features/post_spec.rb
+describe 'navigate' do
+  describe 'index' do
+    it 'can be reached successfully' do
+      visit posts_path
+      expect(page.status_code).to eq(200)
+    end
+    it 'has a title of Posts' do
+      visit posts_path
+      expect(page).to have_content(/Posts/)
+    end
+  end
+
+/controller/post_controller.rb
+  def index
+  end
+
+touch /views/posts/index.html.erb
+<h1>Posts</h1>
+
+/seeds.rb
+100.times do |post|
+  Post.create!(date: Date.today, rationale: "#{post} rationale content")
+end
+puts "100 Posts have been created"
+
+
+/features/post_spec.rb
+describe 'creation' do
+  it 'has a new from that can be reached' do
+    visit new_post_path
+    expect(page.status_code).to eq(200)
+  end
+end
+
+rspec spec/features/post_spec.rb
+
+post_controller.rb :
+def new
+end
+
+touch /posts/new.html.erb
+
+post_controller.rb :
+def new
+  @post = Post.new
+end
+
+/posts/new.html.erb
+<%= form_for @post do |f| %>
+  <%= f.date_field :date %>
+  <%= f.text_area :rationale %>
+<% end %>
+
+rspec
+
+/posts/new.html.erb
+<%= form_for @post do |f| %>
+  <%= f.date_field :date %>
+  <%= f.text_area :rationale %>
+  <%= f.submit 'Save' %>
+<% end %>
+
+rspec
+
+post_controller.rb :
+  def create
+    @post = Post.new(params.require(:post).permit(:date, :rationale))
+    @post.save
+  end
+
+rspec
+
+post_controller.rb :
+  def create
+    @post = Post.new(params.require(:post).permit(:date, :rationale))
+    @post.save
+    redirect_to @post // redirect to show page
+  end
+
+rspec
+
+post_controller.rb :
+def show
+end
+
+touch posts/show.html.erb
+
+rspec
+
+post_controller.rb :
+def show
+  @post =Post.find(params[:id])
+end
+posts/show.html.erb
+<%= @post.inspect %>
+
+post_controller.rb:
+def create
+  @post = Post.new(post_parmas)
+  if @post.save
+    redirect_to @post # redirect to show page
+  else
+    render :new
+  end
+end
+
+private
+
+def post_parmas
+  params.require(:post).permit(:date, :rationale)
+end
+def set_post
+  @post = Post.find(params[:id])
+end
+
+before_action :set_post, only: [:show] # At the very top.
