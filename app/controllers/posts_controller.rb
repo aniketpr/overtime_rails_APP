@@ -12,6 +12,7 @@ class PostsController < ApplicationController
 
 	def create
 	  @post = Post.new(post_parmas)
+	  @post.user_id = current_user.id
 	  if @post.save
 	  	redirect_to @post # redirect to show page
 	  else

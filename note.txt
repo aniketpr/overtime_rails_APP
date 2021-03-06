@@ -258,3 +258,53 @@ def set_post
 end
 
 before_action :set_post, only: [:show] # At the very top.
+
+spec/rails_helper.rb
+include Warden::Test::Helpers
+Warden.test_mode! # This helper method is provided by Devise gem to do mimic test bcz capybara dont have such facilities
+
+/features/post_spec.rb
+before do
+  user = User.create(email: "test@test.com", password: "123456", password_confirmation: "123456", first_name: "aniket", last_name: "Prasad")
+  login_as(user, :scope => :user)
+  visit new_post_path
+end
+it 'will have a user associated it' do 
+  fill_in 'post[date]', with: Date.today
+  fill_in 'post[rationale]', with: "User Association"
+  click_on "Save"
+  expect(User.last.posts.last.rationale).to eq("User Association")
+end
+
+rspec
+
+model/user.rb
+has_many :posts
+
+rake db:setup # Just to check their is no bad data in Db
+
+rails g migration add_users_to_posts user:references
+
+rake db:migrate
+
+rspec
+
+application_controller.rb
+before_action :authenticate_user!
+
+Gemfile :
+# Twitter Bootstrap
+gem 'bootstrap-sass'
+
+mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss
+
+application.css.scss :
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "posts.scss";
+
+application.js :
+require("bootstrap-sprockets")
+
+application.html.erb :
+<body class="container">
