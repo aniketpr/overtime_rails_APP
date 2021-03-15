@@ -308,3 +308,5 @@ require("bootstrap-sprockets")
 
 application.html.erb :
 <body class="container">
+
+https://www.layoutit.com/build
